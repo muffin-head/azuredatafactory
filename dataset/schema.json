@@ -1,0 +1,29 @@
+{
+	"name": "schema",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "dynSchemaParam.xlsx",
+				"fileSystem": "schemaanddata"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "File",
+				"type": "String"
+			},
+			{
+				"name": "rule",
+				"type": "String"
+			}
+		]
+	}
+}
