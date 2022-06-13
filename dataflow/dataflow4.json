@@ -1,0 +1,104 @@
+{
+	"name": "dataflow4",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureSqlDatabase1",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureSqlDatabase1",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flowlet1",
+					"flowlet": {
+						"referenceName": "flowlet1",
+						"type": "DataFlowReference"
+					}
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          Grade as short,",
+				"          StartDate as date,",
+				"          PromotionDate as date,",
+				"          EndDate as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'excel',",
+				"     fileSystem: 'data',",
+				"     fileName: 'EMPDATA.xlsx',",
+				"     sheetName: 'Sheet1',",
+				"     firstRowAsHeader: true) ~> source1",
+				"source1 compose(mapColumn(",
+				"          firstname = FirstName,",
+				"          lstname = LastName,",
+				"          grade = Grade,",
+				"          startdate = StartDate",
+				"     ),",
+				"     composition: 'flowlet1') ~> flowlet1@(output1)",
+				"flowlet1@output1 derive(invaliddate = hasError('invaliddate'),",
+				"          invalidagrade = hasError('wronggrade'),",
+				"          invalidaname = hasError('invalidname')) ~> derivedColumn1",
+				"derivedColumn1 split(invaliddate==false()&&invalidagrade==false()&&invalidaname==false(),",
+				"     disjoint: false) ~> split1@(data, error)",
+				"split1@data sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'dbo',",
+				"     tableName: 'flowlettesting',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
+				"split1@error sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'dbo',",
+				"     tableName: 'erreor',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink2"
+			]
+		}
+	}
+}

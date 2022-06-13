@@ -1,0 +1,38 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "firstname",
+				"type": "nvarchar"
+			},
+			{
+				"name": "lstname",
+				"type": "nvarchar"
+			},
+			{
+				"name": "grade",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "startdate",
+				"type": "date"
+			},
+			{
+				"name": "invaliddate",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "flowlettesting"
+		}
+	}
+}

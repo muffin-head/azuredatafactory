@@ -1,0 +1,39 @@
+{
+	"name": "flowlet1",
+	"properties": {
+		"type": "Flowlet",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "assert1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "input1"
+				},
+				{
+					"name": "output1"
+				}
+			],
+			"scriptLines": [
+				"input(output(",
+				"          firstname as string,",
+				"          lstname as string,",
+				"          grade as short,",
+				"          startdate as date",
+				"     ),",
+				"     order: 0) ~> input1",
+				"aggregate1 assert(expectTrue((length(firstname))!=0 && (length(lstname))!=0, false, 'invalidname'),",
+				"     expectTrue(grade>=6, false, 'wronggrade'),",
+				"     expectTrue(between(startdate,currentDate()-9125,currentDate()+15), false, 'invaliddate')) ~> assert1",
+				"input1 aggregate(groupBy(firstname),",
+				"     each(match(name!='firstname'), $$ = first($$))) ~> aggregate1",
+				"assert1 output() ~> output1"
+			]
+		}
+	}
+}
